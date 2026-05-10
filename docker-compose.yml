@@ -1,22 +1,23 @@
-version: '3.8'
 services:
   evolution_go:
     image: evoapicloud/evolution-go:latest
     container_name: evolution-go
     restart: unless-stopped
     ports:
-      - "3381:4000"
+      - "3381:8080"
     env_file: .env
     labels:
       - traefik.enable=true
-      - traefik.http.routers.evolution_go.rule=Host(`go-vps-local.td24.com.br`)
+      - traefik.docker.network=meu-homelab-net
+      - traefik.http.routers.evolution_go.rule=Host(`evogo-vps-local.td24.com.br`)
       - traefik.http.routers.evolution_go.entrypoints=web
-      - traefik.http.services.evolution_go.loadbalancer.server.port=4000
+      - traefik.http.services.evolution_go.loadbalancer.server.port=8080
     volumes:
       - evolution_data:/app/dbdata
       - evolution_logs:/app/logs
     networks:
       - default
+      - meu-homelab-net
 volumes:
   evolution_data:
     driver: local
@@ -25,4 +26,6 @@ volumes:
 networks:
   default:
     name: evolution_crm_default
+    external: true
+  meu-homelab-net:
     external: true
